@@ -1,0 +1,108 @@
+    <div class="searchContainer">
+        <div>
+          <span *ngFor="let queryItem of queryElements">
+            <span [ngSwitch]="queryItem.type">
+                <span class="form-group form-inline " *ngSwitchCase="'input'"  style="margin-top:10px;padding-right: 10px;">
+                    {{queryItem.label}}:
+                    <input type="text" style="width: 235px;"  placeholder="{{queryItem.placeholder}}" class="form-control" [(ngModel)]="queryParam[queryItem.prop]"  (change)="changeQueryParam(queryItem)" (input)="changeQueryParam(queryItem)">
+                </span>
+                <span class="form-group form-inline " *ngSwitchCase="'date'"  style="margin-top:10px;padding-right: 10px;">
+                    {{queryItem.label}}:
+                    <input type="text" style="width: 235px;"   placeholder="{{queryItem.placeholder}}"  id="date_{{queryItem.id}}"
+                           class="form-control" name="merchantName" [(ngModel)]="queryParam[queryItem.prop]">
+                </span>
+                <span class="form-group form-inline " *ngSwitchCase="'composite'"  style="margin-top:10px;padding-right: 10px;">
+                    {{queryItem.label}}:
+                    <span  *ngFor="let component of queryItem.components">
+                        <input type="text" class="form-control width170" [(ngModel)]="queryParam[component.prop]" placeholder="{{component.placeholder}}"
+                               layer-date id="{{component.id}}" maxelementid="component.maxelementid" minelementid="component.minelementid"
+                               selected-time>
+                                <span *ngIf="$index==0">{{queryItem.link}}</span>
+                     </span>
+                </span>
+                <span class="form-group form-inline " *ngSwitchCase="'select'"  style="margin-top:10px;padding-right: 10px;">
+                    {{queryItem.label}}:
+                    <span *ngIf="!queryItem.dataUrl">
+                      <select    class="form-control width170" [(ngModel)]="queryParam[queryItem.prop]"   (change)="changeQueryParam(queryItem)">
+                          <option value="">{{queryItem.placeholder||'请选择'}}</option>
+                          <option  *ngFor="let component of queryItem.options" value="{{component.value}}">{{component.label}}</option>
+                      </select>
+                    </span>
+                    <span *ngIf="queryItem.dataUrl">
+                      <select  class="form-control width170" [(ngModel)]="queryParam[queryItem.prop]"   (change)="changeQueryParam(queryItem)">
+                          <option value="">{{queryItem.placeholder||'请选择'}}</option>
+                          <option *ngFor="let component of dataQuery.query[queryItem.propList]" value="{{component.id}}">{{component.name}}</option>
+                      </select>
+                    </span>
+
+                  <!--被开关元素控制的元素集合-->
+                    <span *ngIf="queryItem.switchElements">
+                        <span *ngFor="let queryItemInner of queryItem.switchElements">
+                            <span [ngSwitch]="queryItemInner.type">
+                                <span class="form-group form-inline " *ngSwitchCase="'input'"  style="margin-top:10px;padding-right: 10px;">
+                                    {{queryItemInner.label}}:
+                                    <input type="text" style="width: 235px;" placeholder="{{queryItemInner.placeholder}}" class="form-control" name="merchantName" [(ngModel)]="queryParam[queryItemInner.prop]"  (change)="changeQueryParam(queryItemInner)">
+                                </span>
+                                <span class="form-group form-inline " *ngSwitchCase="'date'"  style="margin-top:10px;padding-right: 10px;">
+                                    {{queryItemInner.label}}:
+                                    <input type="text" style="width: 235px;"   placeholder="{{queryItemInner.placeholder}}"  id="date_{{queryItemInner.id}}" layer-date maxelementid="queryItemInner.maxelementid" minelementid=""  (change)="changeQueryParam(queryItemInner)"
+                                           class="form-control" name="merchantName" [(ngModel)]="queryParam[queryItemInner.prop]">
+                                </span>
+                                <span class="form-group form-inline " *ngSwitchCase="'composite'"  style="margin-top:10px;padding-right: 10px;">
+                                    {{queryItemInner.label}}:
+                                    <span  *ngFor="let component of queryItemInner.components">
+                                            <input type="text" class="form-control width170" [(ngModel)]="queryParam[component.prop]" placeholder="{{component.placeholder}}"  (change)="changeQueryParam(queryItemInner)"
+                                                   layer-date id="{{component.id}}" maxelementid="component.maxelementid" minelementid="component.minelementid"
+                                                   selected-time  >
+                                                    <span *ngIf="$index==0">{{queryItem.link}}</span>
+                                        </span>
+                                </span>
+                                <span class="form-group form-inline " *ngSwitchCase="'select'"  style="margin-top:10px;padding-right: 10px;">
+                                    <span *ngIf="queryParam[queryItem.prop]==queryItemInner.whenSwitchValue">
+                                        {{queryItemInner.label}}:
+                                        <span *ngIf="!queryItemInner.initQuery">
+                                          <select  class="form-control width170" [(ngModel)]="queryParam[queryItemInner.prop]" (change)="changeQueryParam(queryItemInner)">
+                                              <option value="">{{queryItemInner.placeholder||'请选择'}}</option>
+                                              <option  *ngFor="let component of dataQuery.query[queryItemInner.propList]" value="{{component.id}}">{{component.name}}</option>
+                                          </select>
+                                        </span>
+                                        <span *ngIf="queryItemInner.initQuery">
+                                          自动查询
+                                          <select class="form-control width170" [(ngModel)]="queryParam[queryItemInner.prop]"  (change)="changeQueryParam(queryItemInner)">
+                                              <option value="">{{queryItemInner.placeholder||'请选择'}}</option>
+                                              <option *ngFor="let component of  queryItemInner.options" value="{{component.value}}">{{component.key}}</option>
+                                          </select>
+                                        </span>
+                                    </span>
+                                </span>
+                            </span>
+                        </span>
+                    </span>
+
+                </span>
+                <span class="form-group form-inline " *ngSwitchCase="'tab'"  style="margin-top:20px;background: rgb(252,252,252);width: 100%;margin-bottom: 0px;margin-left: 0px;">
+                    <span class="label_checkbox">
+                        <ul class="mytableTest" style="display: inline-block;">
+                            <li *ngFor="let component of queryItem.components">
+                                <input type="radio" name="{{queryItem.prop}}" id="table__{{queryItem.prop}}_{{$index}}" value="{{component.value}}" (click)="utils.clearQueryParam()"
+                                       [(ngModel)]="queryParam[queryItem.prop]">
+                                <label for="table__{{queryItem.prop}}_{{$index}}" class="btn">{{component.label}}</label>
+                            </li>
+                        </ul>
+                    </span>
+                </span>
+            </span>
+          </span>
+        </div>
+        <div class="btnContainer">
+              <span *ngFor="let queryItem of queryButtons" [ngSwitch]="queryItem.type">
+                      <span class="form-group form-inline label_checkbox" *ngSwitchCase="'search'">
+                        <label class="btn btn-default borderGreen"  (click)="queryBtnClick(queryParam)">{{queryItem.label}}</label>
+                      </span>
+                      <span class="form-group form-inline label_checkbox"  *ngSwitchCase="'button'" >
+                          <label class="btn btn-default borderGreen" *ngIf="queryItem.param"  (click)="queryItem['listener']&&queryItem['listener'](queryParam,pageData)||queryItem['click']&&queryItem['click'](queryParam,pageData)">{{queryItem.label}}</label>
+                          <label class="btn btn-default borderGreen" *ngIf="!queryItem.param"  (click)="queryItem['listener']&&queryItem['listener']()||queryItem['click']&&queryItem['click']()">{{queryItem.label}}</label>
+                      </span>
+              </span>
+        </div>
+    </div>
